@@ -51,19 +51,16 @@ RUN \
 COPY id_rsa /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa
 
-ARG BASEBRANCH
-ARG TGTBRANCH
-RUN echo $BASEBRANCH
-FROM $BASEBRANCH
+FROM rioacrforjenkins.azurecr.io/slave-builder:3.19-1
 
 RUN \
   mkdir -p $WORKING_DIRECTORY && \
   cd $WORKING_DIRECTORY && \
-  repo init -u ssh://$GERRIT_MASTER$GERRIT_DIR/platform/manifest.git -g $REPO_GROUP -b $TGTBRANCH --depth 1
+  ~/bin/repo init -u ssh://$GERRIT_MASTER$GERRIT_DIR/platform/manifest.git -g $REPO_GROUP -b android-7.0.0_r1 --depth 1
 RUN \
   cd $WORKING_DIRECTORY && \
   cpus=$(grep ^processor /proc/cpuinfo | wc -l) && \
-  repo sync -j $cpus
+  ~/bin/repo sync -j $cpus
 
 RUN \
   rm -f /root/.ssh/id_rsa
